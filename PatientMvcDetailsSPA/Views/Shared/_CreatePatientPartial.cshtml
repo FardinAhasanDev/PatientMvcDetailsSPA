@@ -1,0 +1,118 @@
+@model PatientMvcDetailsSPA.ViewModels.PatientViewModel
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <i class="fas fa-user-plus" style="margin-right:8px;color:var(--success);"></i>
+            Add New Patient
+        </h5>
+    </div>
+    <div class="modal-body">
+        @using (Html.BeginForm("CreatePatient", "Patients", FormMethod.Post, new { id = "createPatientForm", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="row">
+                <div class="col-md-7">
+                    <h4><i class="fas fa-clipboard-list" style="margin-right:6px;"></i> Patient Information</h4>
+                    <div class="form-group mb-2">
+                        @Html.LabelFor(model => model.PatientName, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.PatientName, new { htmlAttributes = new { @class = "form-control", placeholder = "Full name" } })
+                        @Html.ValidationMessageFor(model => model.PatientName, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group mb-2">
+                        @Html.LabelFor(model => model.AdmissionDate, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.AdmissionDate, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.AdmissionDate, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group mb-2">
+                        @Html.LabelFor(model => model.MobileNo, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.MobileNo, new { htmlAttributes = new { @class = "form-control", placeholder = "Mobile number" } })
+                        @Html.ValidationMessageFor(model => model.MobileNo, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group mb-2">
+                        @Html.LabelFor(model => model.RegistrationFee, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.RegistrationFee, new { htmlAttributes = new { @class = "form-control", placeholder = "0.00" } })
+                        @Html.ValidationMessageFor(model => model.RegistrationFee, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group mb-2">
+                        <label class="control-label" style="display:flex;align-items:center;gap:8px;">
+                            @Html.EditorFor(model => model.IsEnrolled)
+                            <span>Enrolled</span>
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsEnrolled, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group mb-2">
+                        @Html.LabelFor(model => model.DoctorId, htmlAttributes: new { @class = "control-label" })
+                        @Html.DropDownListFor(model => model.DoctorId, new SelectList(Model.Doctors, "DoctorId", "DoctorName"), "Select Doctor", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.DoctorId, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group mb-2">
+                        <img id="imageFile" src="~/images/noimage.png" alt="image" width="100" style="border-radius:var(--radius-md);border:2px solid var(--border-color);object-fit:cover;" /><br />
+                        @Html.LabelFor(model => model.ProfileFile, htmlAttributes: new { @class = "control-label", style = "margin-top:8px;" })
+                        <input onchange="readUrl(this)" type="file" name="ProfileFile" id="ProfileFile" class="form-control" style="margin-top:4px;" />
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <h4><i class="fas fa-pills" style="margin-right:6px;"></i> Prescriptions</h4>
+                    <button onclick="AddMedicine()" type="button" class="btn btn-warning btn-sm mb-2">
+                        <i class="fas fa-plus"></i> Add Medicine
+                    </button>
+                    @Html.Partial("_AddPrescriptions", Model.Prescriptions)
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Close
+                </button>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-check"></i> Create Patient
+                </button>
+            </div>
+        }
+    </div>
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<script>
+    function readUrl(i) {
+        if (i.files && i.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $("#imageFile").attr('src', e.target.result)
+            }
+            reader.readAsDataURL(i.files[0]);
+        }
+    }
+    function deleteRow(btn) {
+        $(btn).closest('tr').remove();
+        updatePrescriptionIndex();
+    }
+    function AddMedicine() {
+        var lastIndex = parseInt($('#HIndex').val());
+        var newRow = `
+    <tr>
+        <td>
+            <input type="text" value="" class="form-control" name="Prescriptions[${lastIndex}].MedicineName" />
+        </td>
+        <td>
+            <input type="text" value="" class="form-control" name="Prescriptions[${lastIndex}].Duration" />
+        </td>
+        <td>
+            <button onclick="deleteRow(this)" type="button" class="btn btn-danger btn-sm"><i class="fas fa-trash-can"></i></button>
+        </td>
+    </tr>
+    `
+        $("#ExTable tbody").append(newRow);
+        $('#HIndex').val(lastIndex + 1);
+        updatePrescriptionIndex();
+    }
+    
+    function updatePrescriptionIndex() {
+        $("#ExTable tbody tr").each(function (index) {
+            $(this).find("input[name^='Prescriptions']").each(function () {
+                var name = $(this).attr("name");
+                name = name.replace(/Prescriptions\[\d+\]/, "Prescriptions[" + index + "]");
+                $(this).attr("name", name)
+            })
+        })
+    }
+    
+</script>

@@ -1,0 +1,29 @@
+@model List<PatientMvcDetailsSPA.Models.Prescription>
+<table id="ExTable" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Medicine Name</th>
+            <th>Duration</th>
+            <th style="width:60px;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td>
+                    <input type="text" value="@Model[i].MedicineName" class="form-control" name="Prescriptions[@i].MedicineName" placeholder="Medicine name" />
+                </td>
+                <td>
+                    <input type="text" value="@Model[i].Duration" class="form-control" name="Prescriptions[@i].Duration" placeholder="Duration" />
+                </td>
+                <td>
+                    <button onclick="deleteRow(this)" type="button" class="btn btn-danger btn-sm btn-icon">
+                        <i class="fas fa-trash-can"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<input type="hidden" id="HIndex" value="@Model.Count"/>

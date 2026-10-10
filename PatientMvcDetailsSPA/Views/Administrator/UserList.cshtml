@@ -1,0 +1,73 @@
+@model IEnumerable<PatientMvcDetailsSPA.Models.tbl_User>
+@{
+    ViewBag.Title = "User Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <h2>
+        <span class="header-icon"><i class="fas fa-users-gear"></i></span>
+        User Management
+    </h2>
+    <a href="@Url.Action("Index", "Administrator")" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Roles
+    </a>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid" style="max-width:300px;">
+    <div class="stat-card">
+        <div class="stat-icon info"><i class="fas fa-users"></i></div>
+        <div>
+            <div class="stat-label">Total Users</div>
+            <div class="stat-value">@Model.Count()</div>
+        </div>
+    </div>
+</div>
+
+<!-- User Table -->
+<div class="table-container">
+    <div class="table-header">
+        <h5><i class="fas fa-user-group" style="margin-right:8px;color:var(--primary);"></i> All Users</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th style="text-align:center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <span style="display:inline-flex;align-items:center;gap:10px;">
+                                <span style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.8rem;flex-shrink:0;">
+                                    @item.UserName.Substring(0, 1).ToUpper()
+                                </span>
+                                <strong>@Html.DisplayFor(modelItem => item.UserName)</strong>
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-btns" style="justify-content:center;">
+                                @Html.ActionLink(" Assign Role", "AssignRole", new { id = item.UserId }, new { @class = "btn btn-info btn-sm" })
+                                @Html.ActionLink(" Delete", "Delete", new { id = item.UserId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Delete this user?');" })
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-users"></i></div>
+                <h5>No Users Found</h5>
+                <p>No registered users yet.</p>
+            </div>
+        }
+    </div>
+</div>

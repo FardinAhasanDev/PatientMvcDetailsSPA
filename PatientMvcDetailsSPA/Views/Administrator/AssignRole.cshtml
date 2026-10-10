@@ -1,0 +1,53 @@
+@model PatientMvcDetailsSPA.ViewModels.ManageUserRoleViewModel
+@{
+    ViewBag.Title = "Assign Role";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <h2>
+        <span class="header-icon"><i class="fas fa-user-gear"></i></span>
+        Assign Roles
+    </h2>
+</div>
+
+<div class="form-card" style="max-width:650px;">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <h4><i class="fas fa-user" style="margin-right:8px;"></i> User: <span style="color:var(--primary);">@Model.UserName</span></h4>
+        <hr />
+
+        @Html.HiddenFor(m => m.UserId)
+        @Html.HiddenFor(m => m.UserName)
+
+        <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:18px;">
+            <i class="fas fa-info-circle" style="margin-right:4px;"></i>
+            Select the roles you want to assign to this user.
+        </p>
+
+        <div class="checkbox-group">
+            @for (int i = 0; i < Model.UserRoles.Count; i++)
+            {
+                <div class="checkbox-item">
+                    @Html.CheckBoxFor(m => m.UserRoles[i].IsAssigned, new { style = "margin:0;" })
+                    @Html.HiddenFor(m => m.UserRoles[i].RoleId)
+                    @Html.HiddenFor(m => m.UserRoles[i].RoleName)
+                    <label>
+                        <i class="fas fa-shield" style="color:var(--primary);margin-right:6px;font-size:0.8rem;"></i>
+                        @Model.UserRoles[i].RoleName
+                    </label>
+                </div>
+            }
+        </div>
+
+        <div class="form-actions">
+            <input type="submit" value="Update Roles" class="btn btn-primary" />
+            <a href="@Url.Action("UserList")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left" style="margin-right:4px;"></i> Back to Users
+            </a>
+        </div>
+    }
+</div>

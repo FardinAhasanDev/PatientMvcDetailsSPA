@@ -1,0 +1,37 @@
+@model PatientMvcDetailsSPA.Models.tbl_Role
+@{
+    ViewBag.Title = "Create Role";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <h2>
+        <span class="header-icon"><i class="fas fa-plus-circle"></i></span>
+        Create New Role
+    </h2>
+</div>
+
+<div class="form-card">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <h4><i class="fas fa-shield-halved" style="margin-right:8px;"></i> Role Information</h4>
+        <hr />
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.RoleName, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(m => m.RoleName, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter role name (e.g., Admin, Doctor, Nurse)" } })
+            @Html.ValidationMessageFor(m => m.RoleName, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-actions">
+            <input type="submit" value="Create Role" class="btn btn-success" />
+            <a href="@Url.Action("Index", "Administrator")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left" style="margin-right:4px;"></i> Back to Roles
+            </a>
+        </div>
+    }
+</div>

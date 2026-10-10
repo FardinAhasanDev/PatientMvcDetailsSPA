@@ -1,0 +1,46 @@
+@model PatientMvcDetailsSPA.Models.Doctor
+
+@{
+    ViewBag.Title = "Delete Doctor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <h2>
+        <span class="header-icon" style="background:linear-gradient(135deg, #ef4444, #dc2626);"><i class="fas fa-trash-can"></i></span>
+        Delete Doctor
+    </h2>
+</div>
+
+<div class="detail-card">
+    <div class="delete-warning">
+        <span class="warning-icon"><i class="fas fa-triangle-exclamation"></i></span>
+        <span>Are you sure you want to permanently delete this doctor? This action cannot be undone.</span>
+    </div>
+
+    <h4><i class="fas fa-user-md" style="margin-right:8px;"></i> Doctor to Delete</h4>
+
+    <dl>
+        <dt>@Html.DisplayNameFor(model => model.DoctorName)</dt>
+        <dd>
+            <span style="display:inline-flex;align-items:center;gap:10px;">
+                <span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--danger),#f87171);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.85rem;">
+                    @Model.DoctorName.Substring(0, 1).ToUpper()
+                </span>
+                @Html.DisplayFor(model => model.DoctorName)
+            </span>
+        </dd>
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="action-links">
+            <input type="submit" value="Delete Doctor" class="btn btn-danger" />
+            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Cancel
+            </a>
+        </div>
+    }
+</div>

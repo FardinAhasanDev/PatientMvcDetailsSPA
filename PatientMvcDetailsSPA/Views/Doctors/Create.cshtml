@@ -1,0 +1,38 @@
+@model PatientMvcDetailsSPA.Models.Doctor
+
+@{
+    ViewBag.Title = "Create Doctor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <h2>
+        <span class="header-icon"><i class="fas fa-user-plus"></i></span>
+        Add New Doctor
+    </h2>
+</div>
+
+<div class="form-card">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <h4><i class="fas fa-user-md" style="margin-right:8px;"></i> Doctor Information</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DoctorName, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(model => model.DoctorName, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter doctor's full name" } })
+            @Html.ValidationMessageFor(model => model.DoctorName, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-actions">
+            <input type="submit" value="Create Doctor" class="btn btn-success" />
+            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left" style="margin-right:4px;"></i> Back to List
+            </a>
+        </div>
+    }
+</div>

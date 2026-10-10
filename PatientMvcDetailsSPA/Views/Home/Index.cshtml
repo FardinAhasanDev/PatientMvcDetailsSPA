@@ -1,0 +1,41 @@
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Welcome Section -->
+<div class="welcome-section">
+    <div class="welcome-icon">
+        <i class="fas fa-heartbeat"></i>
+    </div>
+    <h2>Welcome to PatientCare Pro</h2>
+    <p>Your comprehensive patient management dashboard. Manage patients, doctors, prescriptions, and administrative tasks with ease.</p>
+</div>
+
+<!-- Quick Action Cards -->
+<div class="quick-actions">
+    <a href="@Url.Action("Index", "Patients")" class="quick-action-card">
+        <div class="action-icon patients">
+            <i class="fas fa-hospital-user"></i>
+        </div>
+        <h5>Patient Records</h5>
+        <p>View and manage all patients</p>
+    </a>
+    <a href="@Url.Action("Index", "Doctors")" class="quick-action-card">
+        <div class="action-icon doctors">
+            <i class="fas fa-user-md"></i>
+        </div>
+        <h5>Doctor Directory</h5>
+        <p>Browse and manage doctors</p>
+    </a>
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+    {
+        <a href="@Url.Action("Index", "Administrator")" class="quick-action-card">
+            <div class="action-icon admin">
+                <i class="fas fa-shield-halved"></i>
+            </div>
+            <h5>Administration</h5>
+            <p>Manage roles and users</p>
+        </a>
+    }
+</div>

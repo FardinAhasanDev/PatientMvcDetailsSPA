@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Patient Management System — Professional Healthcare SPA">
+    <title>@ViewBag.Title - Patient Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/Site.css?v=2.0" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <a href="@Url.Action("Index", "Home")">
+                    <div class="brand-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <span>PatientCare Pro</span>
+                </a>
+            </div>
+
+            <ul class="sidebar-nav">
+                <li class="nav-section-title">Main Menu</li>
+
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Home")" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" ? "active" : "")">
+                        <span class="nav-icon"><i class="fas fa-home"></i></span>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Patients")" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Patients" ? "active" : "")">
+                        <span class="nav-icon"><i class="fas fa-hospital-user"></i></span>
+                        Patients
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Doctors")" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Doctors" ? "active" : "")">
+                        <span class="nav-icon"><i class="fas fa-user-md"></i></span>
+                        Doctors
+                    </a>
+                </li>
+
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <li class="nav-section-title">Administration</li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "Administrator")" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Administrator" ? "active" : "")">
+                            <span class="nav-icon"><i class="fas fa-shield-halved"></i></span>
+                            Roles & Users
+                        </a>
+                    </li>
+                }
+
+                <li class="nav-section-title">Account</li>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li class="nav-item">
+                        <a href="@Url.Action("Logout", "Account")" class="nav-link">
+                            <span class="nav-icon"><i class="fas fa-right-from-bracket"></i></span>
+                            Logout
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a href="@Url.Action("Login", "Account")" class="nav-link @(ViewBag.Title != null && ViewBag.Title.ToString() == "Login" ? "active" : "")">
+                            <span class="nav-icon"><i class="fas fa-right-to-bracket"></i></span>
+                            Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Signup", "Account")" class="nav-link @(ViewBag.Title != null && ViewBag.Title.ToString() == "Signup" ? "active" : "")">
+                            <span class="nav-icon"><i class="fas fa-user-plus"></i></span>
+                            Sign Up
+                        </a>
+                    </li>
+                }
+            </ul>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="sidebar-footer">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            @User.Identity.Name.Substring(0, 1).ToUpper()
+                        </div>
+                        <div>
+                            <span class="user-name">@User.Identity.Name</span>
+                            <span class="user-role">@(User.IsInRole("Admin") ? "Administrator" : "User")</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <button class="mobile-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="page-title-area">
+                        <h1>@ViewBag.Title</h1>
+                        <span class="breadcrumb-text">PatientCare Pro / @ViewBag.Title</span>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <span style="font-size:0.82rem;color:var(--text-secondary);font-weight:500;">
+                            <i class="fas fa-circle" style="color:var(--success);font-size:0.5rem;vertical-align:middle;margin-right:4px;"></i>
+                            @User.Identity.Name
+                        </span>
+                    }
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content animate-in">
+                @RenderBody()
+            </div>
+
+            <!-- Footer -->
+            <footer class="app-footer">
+                <p>&copy; @DateTime.Now.Year <strong>PatientCare Pro</strong> &mdash; Patient Management System. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1030;"></div>
+
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+        }
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

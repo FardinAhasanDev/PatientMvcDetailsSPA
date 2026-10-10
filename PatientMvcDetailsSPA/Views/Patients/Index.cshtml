@@ -1,0 +1,243 @@
+@model IEnumerable<PatientMvcDetailsSPA.Models.Patient>
+@{
+    ViewBag.Title = "Patients";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <h2>
+        <span class="header-icon"><i class="fas fa-hospital-user"></i></span>
+        Patient Records
+    </h2>
+    <button id="btnCreate" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Patient
+    </button>
+</div>
+
+<!-- Stats Overview -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon primary"><i class="fas fa-users"></i></div>
+        <div>
+            <div class="stat-label">Total Patients</div>
+            <div class="stat-value">@Model.Count()</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon success"><i class="fas fa-user-check"></i></div>
+        <div>
+            <div class="stat-label">Enrolled</div>
+            <div class="stat-value">@Model.Count(p => p.IsEnrolled)</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon warning"><i class="fas fa-user-clock"></i></div>
+        <div>
+            <div class="stat-label">Not Enrolled</div>
+            <div class="stat-value">@Model.Count(p => !p.IsEnrolled)</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon info"><i class="fas fa-stethoscope"></i></div>
+        <div>
+            <div class="stat-label">Doctors</div>
+            <div class="stat-value">@Model.Select(p => p.DoctorId).Distinct().Count()</div>
+        </div>
+    </div>
+</div>
+
+<!-- Patient Table -->
+<div id="patient-app">
+    <div class="table-container">
+        <div class="table-header">
+            <h5><i class="fas fa-list" style="margin-right:8px;color:var(--primary);"></i> All Patients</h5>
+            <div class="table-search">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
+                <input type="text" id="searchPatients" placeholder="Search patients..." />
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Patient Name</th>
+                        <th>Admission Date</th>
+                        <th>Mobile No</th>
+                        <th>Reg. Fee</th>
+                        <th>Doctor</th>
+                        <th>Status</th>
+                        <th>Prescriptions</th>
+                        <th style="text-align:center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="patient-list-body">
+                    @foreach (var s in Model)
+                    {
+                        <tr data-patient-id="@s.PatientId">
+                            <td>
+                                <img src="@Url.Content("~/images/" + s.ImageUrl)" class="patient-img" alt="@s.PatientName" />
+                            </td>
+                            <td>
+                                <strong style="color:var(--text-primary);">@s.PatientName</strong>
+                            </td>
+                            <td>
+                                <span style="color:var(--text-secondary);">
+                                    <i class="far fa-calendar" style="margin-right:4px;font-size:0.75rem;"></i>
+                                    @s.AdmissionDate.ToString("dd MMM yyyy")
+                                </span>
+                            </td>
+                            <td>
+                                <span style="color:var(--text-secondary);">
+                                    <i class="fas fa-phone" style="margin-right:4px;font-size:0.7rem;"></i>
+                                    @s.MobileNo
+                                </span>
+                            </td>
+                            <td>
+                                <strong>৳@s.RegistrationFee.ToString("N2")</strong>
+                            </td>
+                            <td>
+                                <span style="display:inline-flex;align-items:center;gap:5px;">
+                                    <i class="fas fa-user-md" style="color:var(--accent);font-size:0.75rem;"></i>
+                                    @s.Doctor.DoctorName
+                                </span>
+                            </td>
+                            <td>
+                                @if (s.IsEnrolled)
+                                {
+                                    <span class="status-badge enrolled">
+                                        <span class="status-dot"></span> Enrolled
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge not-enrolled">
+                                        <span class="status-dot"></span> Pending
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <ul class="prescription-list">
+                                    @foreach (var m in s.Prescriptions)
+                                    {
+                                        <li><strong>@m.MedicineName</strong> — @m.Duration</li>
+                                    }
+                                </ul>
+                            </td>
+                            <td>
+                                <div class="action-btns" style="justify-content:center;">
+                                    <a class="btn btn-info btn-icon btn-sm edit-btn" href="@Url.Action("EditPartial", "Patients", new {id=s.PatientId})" title="Edit">
+                                        <i class="fas fa-pen-to-square"></i>
+                                    </a>
+                                    <button class="btn btn-danger btn-icon btn-sm delete-btn" data-patient-id="@s.PatientId" data-patient-name="@s.PatientName" title="Delete">
+                                        <i class="fas fa-trash-can"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (!Model.Any())
+            {
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
+                    <h5>No Patients Found</h5>
+                    <p>Start by adding your first patient record.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div id="modalContainer"></div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Search functionality
+            $('#searchPatients').on('keyup', function () {
+                var value = $(this).val().toLowerCase();
+                $('#patient-list-body tr').filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            // Create patient modal
+            $("#btnCreate").click(function () {
+                $.get('@Url.Action("CreatePartial", "Patients")', function (data) {
+                    $("#modalContainer").html(`<div class="modal fade show" style="display:block;" aria-modal="true" role="dialog"><div class="modal-dialog modal-lg"><div class="modal-content">` + data + `</div></div></div><div class="modal-backdrop fade show"></div>`);
+                    attachModalEventListeners();
+                });
+            });
+
+            // Edit patient modal
+            $('#patient-list-body').on('click', '.edit-btn', function (e) {
+                e.preventDefault();
+                var editUrl = $(this).attr('href');
+                $.get(editUrl, function (data) {
+                    $("#modalContainer").html('<div class="modal fade show" style="display:block;" aria-modal="true" role="dialog"><div class="modal-dialog modal-lg"><div class="modal-content">' + data + '</div></div></div><div class="modal-backdrop fade show"></div>');
+                    attachModalEventListeners("Edit", $(e.currentTarget).closest('tr').data('patient-id'));
+                });
+            });
+
+            // Delete patient
+            $('#patient-list-body').on('click', '.delete-btn', function () {
+                var patientId = $(this).data('patient-id');
+                var patientName = $(this).data('patient-name');
+                if (confirm('Are you sure you want to delete ' + patientName + '?')) {
+                    $.post('@Url.Action("DeletePatient", "Patients")', { id: patientId })
+                        .done(function (response) {
+                            if (response.success) {
+                                window.location.reload();
+                            } else {
+                                alert('Error deleting patient: ' + response.message);
+                            }
+                        })
+                        .fail(function () {
+                            alert('An error occurred while deleting the patient.');
+                        });
+                }
+            });
+
+            function attachModalEventListeners(action = "Create", patientId = null) {
+                $(document).off("click", ".modal-backdrop, .modal .btn-secondary").on("click", ".modal-backdrop, .modal .btn-secondary", function () {
+                    $("#modalContainer").empty();
+                });
+                $(document).off("submit", "#createPatientForm, #editPatientForm").on("submit", "#createPatientForm, #editPatientForm", function (e) {
+                    e.preventDefault();
+                    var form = $(this);
+                    var formData = new FormData(this);
+                    var url = '';
+                    url = '@Url.Action("CreatePatient", "Patients")';
+
+                    if (form.attr('id') === "createPatientForm" && action === "Create") {
+                        url = '@Url.Action("CreatePatient", "Patients")';
+                    } else if (form.attr('id') === "editPatientForm" && action === "Edit") {
+                        url = '@Url.Action("EditPatient", "Patients")';
+                     if (patientId) {formData.append("PatientId", patientId);}
+                    }
+                    if (url) {
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function (response) {
+                                if (response.success) {
+                                    $("#modalContainer").empty();
+                                    window.location.reload();
+                                } else {
+                                    $("#modalContainer .modal-content").html(response);
+                                    attachModalEventListeners(action, patientId);
+                                }
+                            },
+                            error: function () {alert("Error performing operation.");}
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+}

@@ -1,0 +1,71 @@
+@model IEnumerable<PatientMvcDetailsSPA.Models.tbl_Role>
+@{
+    ViewBag.Title = "Administration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <h2>
+        <span class="header-icon"><i class="fas fa-shield-halved"></i></span>
+        Role Management
+    </h2>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        @Html.ActionLink("Create Role", "CreateRole", "Administrator", null, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Manage Users", "UserList", "Administrator", null, new { @class = "btn btn-warning" })
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid" style="max-width:300px;">
+    <div class="stat-card">
+        <div class="stat-icon primary"><i class="fas fa-user-shield"></i></div>
+        <div>
+            <div class="stat-label">Total Roles</div>
+            <div class="stat-value">@Model.Count()</div>
+        </div>
+    </div>
+</div>
+
+<!-- Role Table -->
+<div class="table-container">
+    <div class="table-header">
+        <h5><i class="fas fa-key" style="margin-right:8px;color:var(--primary);"></i> All Roles</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Role ID</th>
+                    <th>Role Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <span style="background:var(--bg-body);padding:4px 12px;border-radius:50px;font-size:0.78rem;font-weight:600;color:var(--text-secondary);">
+                                #@item.RoleId
+                            </span>
+                        </td>
+                        <td>
+                            <span style="display:inline-flex;align-items:center;gap:8px;">
+                                <i class="fas fa-shield" style="color:var(--primary);font-size:0.8rem;"></i>
+                                <strong>@item.RoleName</strong>
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-shield-halved"></i></div>
+                <h5>No Roles Defined</h5>
+                <p>Create your first role to get started.</p>
+            </div>
+        }
+    </div>
+</div>
